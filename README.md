@@ -1,45 +1,74 @@
-<p align="center">
-    <a href="https://avored.com/" target="_blank"><img src="./public/images/logo.svg?sanitize=true" height="86" alt="AvoRed"></a>
-</p>
+<p align="center"><a href="https://avored.com" target="_blank"><img src="https://raw.githubusercontent.com/avored/framework/main/logo.svg" width="400"></a></p>
 
-<p align="center">
-    <a href="https://avored.com" target="_blank"><img src="https://github.com/avored/framework/workflows/Run%20Tests/badge.svg" alt="AvoRed Tests"></a>
-    <a href="https://packagist.org/packages/avored/framework" target="_blank"><img src="https://poser.pugx.org/avored/framework/downloads" alt="Total Downloads"></a>
-    <a href="https://packagist.org/packages/avored/framework" target="_blank"><img src="https://poser.pugx.org/avored/framework/v/stable" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/avored/framework" target="_blank"><img src="https://poser.pugx.org/avored/framework/license" alt="License"></a>
-</p> 
+# AvoRed an laravel headless e commerce 
 
-#### [AvoRed](https://avored.com/) is commin up as a headless graphql version.
+A  headless e commerce GraphQL API which uses Laravel as a backend.
 
-[AvoRed](https://avored.com/) is a free open-source e-commerce platform written in PHP based on Laravel.    
-Its an ingenuous and modular e-commerce that is easily customizable according to your needs, with a modern responsive mobile friendly interface as default.    
-The main advantage of being an modular E-Commerce is that you can download each module separately that is necessary for your store.
+## Installation 
 
-[![Chat on Slack](https://img.shields.io/badge/join--slack-avored--ecommerce-c62828.svg?longCache=true&style=for-the-badge&logo=slack&color=#c62828)](https://join.slack.com/t/avored/shared_invite/zt-5osaf044-nuTeldrwVsa~xI0XyVlZjQ)
+##### Backend APP setup 
 
-## Changelog
+First thing first we will install laravel backend api service. First thing first we will install the laravel app. 
 
-All notable changes to [AvoRed](https://avored.com/) will be documented [here](CHANGELOG.md).
+    composer create-project laravel/laravel avored-backend
+    cd avored-backend
+    composer require avored/framework
+    composer require avored/dummy-data
+    composer require avored/cash-on-delivery
+    composer require avored/pickup
 
-## Documentation
+Set up your .env values and CORS
 
-Please visit the [AvoRed Documentation](https://avored.com/docs) to get started with [AvoRed](https://avored.com/).
+To fixed the CORS in your laravel8 app. You can open `config/cors.php` and replace the code like below in the file.
 
-## Demo 
+    'allowed_origins' => ['http://localhost:8080'],
 
-A demo store can be found at [https://demo.avored.com](https://demo.avored.com/).
 
-## Contributing
+Once the .env setup is done then we can install the AvoRed E commerce
 
-Please read our [contributing guide](.github/CONTRIBUTING.md) if you want to contribute to this project.
+    php artisan avored:install
+    php artisan vendor:publish --provider="AvoRed\Framework\AvoRedServiceProvider"
+    yoursite.com/graphiql
 
-## Contributors
+Once the avored/framework has been installed after that we will make sure we setup the CORS to allow access of an graphql api via any frontend.
 
-[AvoRed](https://avored.com/) exists thanks to all the people who contribute. [[Contribute]](.github/CONTRIBUTING.md).
-<a href="https://github.com/avored/laravel-ecommerce/graphs/contributors"><img src="https://opencollective.com/laravel-ecommerce/contributors.svg?width=890" title="contributors" alt="contributors" /></a>
+##### Frontend APP Setup
 
-## Sponsors
+    git clone https://github.com/avored/laravel-ecommerce avored-frontend
+    cd avored-frontend
+    npm install
+    npm run serve
 
-Support [AvoRed](https://avored.com/) by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/laravel-ecommerce#sponsor)]
 
-<a href="https://opencollective.com/laravel-ecommerce/sponsor/0/website" target="_blank"><img src="https://opencollective.com/laravel-ecommerce/sponsor/0/avatar.svg"></a>
+#### Installation via Docker
+
+Execute the below command:
+
+    git clone https://github.com/avored/docker-dev.git
+    cd docker-dev
+
+    git clone https://github.com/avored/laravel-ecommerce ./src/frontend
+    docker-compose up -d
+    docker-compose run --rm composer create-project laravel/laravel:8.6 ./
+    docker-compose run --rm composer require avored/framework
+    docker-compose run --rm composer require avored/dummy-data avored/cash-on-delivery avored/pickup
+
+Now setup `.env` file. Open a avored app .env file which is located at `./src/backend/.env` then setup your database and any other env as per your docker-compose.yml file
+
+    DB_HOST=mysql
+    DB_DATABASE=homestead
+    DB_USERNAME=homestead
+    DB_PASSWORD=secret
+
+Now we just have to install the AvoRed and create an avored admin user account
+
+    docker-compose run --rm artisan avored:install
+    docker-compose run --rm artisan vendor:publish --provider="AvoRed\Framework\AvoRedServiceProvider"
+
+Now we need to setup CORS so frontend application can receive api call from backnd.
+Open `./src/backend/config/cors.php` then replace the below line
+
+        'paths' => ['/graphql', 'sanctum/csrf-cookie'],
+        'allowed_origins' => ['http://localhost:8060'],
+
+That's It. Now you can visit `http://localhost:8060` for frontend and for backend you can visit `http://localhost:8050/admin`
